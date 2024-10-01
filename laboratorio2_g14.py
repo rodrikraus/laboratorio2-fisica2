@@ -11,7 +11,7 @@ epsilon_convergencia = 0.001
 max_dif = float('inf')
 
 bornes = [
-    {'pot': 12, 'x': 50, 'y': 120},
+    {'pot': 12, 'x': 50, 'y': 120}, # Borne con potencial "pot" expresado en V, con posición (x,y)
     {'pot': -12, 'x': 51, 'y': 100}
 ]
 
@@ -68,8 +68,8 @@ while max_dif >= epsilon_convergencia:
     max_dif = max_iteracion # se actualiza la máxima diferencia por iteración
 
 # Generación de gráficos
-plot_base = plt.figure(figsize=(10, 10))
-plot = plot_base.add_subplot()
+plot_base = plt.figure(figsize=(16,9))
+plot = plot_base.add_subplot(121)
 
 # Graficar: ejes y grilla
 plot.set_xlabel('$x$')
@@ -77,7 +77,7 @@ plot.set_ylabel('$y$')
 plot.set_xlim(0,x_max)
 plot.set_ylim(0,y_max)
 plot.set_aspect('equal')
-plt.grid()
+plot.grid(True)
 
 # Graficar: Potencial eléctrico
 plt.contourf(X, Y, V_total, 20, cmap='seismic')
@@ -86,4 +86,10 @@ plt.contourf(X, Y, V_total, 20, cmap='seismic')
 plt.title("Potencial eléctrico")
 plt.colorbar(label="Potencial (V)")
 
-plt.show()
+#plt.figure(figsize=(10, 10))
+plot = plot_base.add_subplot(122, projection='3d')
+sup_potencial= plot.plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic',edgecolor='none')
+#sup_potencial = plt.axes(projection='3d').plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic',edgecolor='none')
+plt.colorbar(sup_potencial,label="Potencial (V)")
+
+plt.savefig("labo2_combinado.jpg", bbox_inches='tight')
