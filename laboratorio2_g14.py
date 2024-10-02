@@ -7,7 +7,7 @@ y_max = 161
 x_max = 101
 
 #Condición de corte
-epsilon_convergencia = 0.001
+epsilon_convergencia = 1
 max_dif = float('inf')
 
 bornes = [
@@ -92,4 +92,10 @@ sup_potencial= plot.plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic
 #sup_potencial = plt.axes(projection='3d').plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic',edgecolor='none')
 plt.colorbar(sup_potencial,label="Potencial (V)")
 
-plt.savefig("labo2_combinado.jpg", bbox_inches='tight')
+plt.savefig("labo2_combinado_1.jpg", bbox_inches='tight')
+#plt.show()
+
+# Notas del asistente:
+    # Debería manejar bornes con formas, no puntuales
+    # Informe es igual que el anterior: explicar la física de lo que se ve en los gráficos
+    # Recomendó explicar un poco de la algoritmia
