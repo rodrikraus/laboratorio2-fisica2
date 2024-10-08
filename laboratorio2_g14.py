@@ -6,6 +6,20 @@ from matplotlib.patches import Circle
 y_max = 161
 x_max = 101
 
+# Condición de corte
+epsilon_convergencia = 1
+max_dif = float('inf') # Maximo "real" dado por Python. Auxiliar para hallar la maxima diferencia
+
+# Formas a dibujar
+rectangulos = [
+    {'extremo_inf_x': 20, 'extremo_inf_y': 20, 'ancho': 5, 'alto': 30, 'valor_pot': 9},
+    {'extremo_inf_x': 40, 'extremo_inf_y': 60, 'ancho': 10, 'alto': 15, 'valor_pot': 12}
+]
+
+circulos = [
+    {'centro_x': 110, 'centro_y': 40, 'radio': 10, 'valor_pot': 24}
+]
+
 # Creación de una malla de puntos en 2D
 x = np.linspace(0, x_max, x_max)
 y = np.linspace(0, y_max, y_max)
@@ -13,20 +27,18 @@ X, Y = np.meshgrid(x, y)
 
 # Inicialización del potencial eléctrico (matriz)
 V_total = np.zeros_like(X)
-grilla_control = np.zeros_like(X)
-
-# Vi,j = f(i,j) --> f va a retornar el valor del borne
+grilla_control = np.zeros_like(X) # Estructura auxiliar para "detectar" bornes (sus valores son fijos)
 
 def es_borne(coord_x, coord_y):
-    return grilla_control[coord_y, coord_x] == 1
+    return grilla_control[coord_y, coord_x] == 1 # En la estructura auxiliar los bornes serán 1, sino serán 0
 
-def rectangulo(extremo_sup, ancho, alto, valor_pot):
+def dibujar_rectangulo(extremo_sup, ancho, alto, valor_pot):
     y1, x1 = extremo_sup
     y2, x2 = y1 + alto, x1 + ancho
     V_total[y1:y2, x1:x2] = valor_pot
     grilla_control[y1:y2, x1:x2] = 1
 
-def circulo(centro, radio, valor_pot):
+def dibujar_circulo(centro, radio, valor_pot):
     yc, xc = centro
     for y in range(V_total.shape[0]):
         for x in range(V_total.shape[1]):
@@ -34,13 +46,12 @@ def circulo(centro, radio, valor_pot):
                 V_total[y, x] = valor_pot
                 grilla_control[y, x] = 1
 
-rectangulo((20,20), 5, 30, 9)
-rectangulo((40,60), 10, 15, 12)
-circulo((120,60), 10, 24)
+# Se "dibujan" las formas con valores de potencial
+for rectangulo in rectangulos:
+    dibujar_rectangulo((rectangulo['extremo_inf_y'], rectangulo['extremo_inf_x']), rectangulo['ancho'], rectangulo['alto'], rectangulo['valor_pot'])
 
-# Condición de corte
-epsilon_convergencia = .01
-max_dif = float('inf')
+for circulo in circulos:
+    dibujar_circulo((circulo['centro_x'], circulo['centro_y']), circulo['radio'], circulo['valor_pot'])
 
 # Función para calcular el promedio entre los vecinos
 def promedio_vecinos(coord_y, coord_x):
@@ -63,7 +74,7 @@ def promedio_vecinos(coord_y, coord_x):
 # Ciclo principal
 while max_dif >= epsilon_convergencia:
     max_iteracion = 0
-    for iy, ix in np.ndindex(V_total.shape): # Iteración de cálculo de promedios para la grilla entera
+    for iy, ix in np.ndindex(V_total.shape): # Iteración para la grilla entera
         if not es_borne(ix, iy): # Los bornes tendrán sus valores de potencial siempre fijos, entonces para cada elemento no-borne
             nuevo_valor = promedio_vecinos(iy, ix)
             dif = abs(nuevo_valor - V_total[iy, ix])
@@ -91,7 +102,6 @@ plt.contourf(X, Y, V_total, 20, cmap='seismic')
 plt.title("Potencial eléctrico")
 plt.colorbar(label="Potencial (V)")
 
-#plt.figure(figsize=(10, 10))
 plot = plot_base.add_subplot(122, projection='3d')
 sup_potencial= plot.plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic',edgecolor='none')
 #sup_potencial = plt.axes(projection='3d').plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic',edgecolor='none')
