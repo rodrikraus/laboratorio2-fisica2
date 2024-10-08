@@ -6,23 +6,6 @@ from matplotlib.patches import Circle
 y_max = 161
 x_max = 101
 
-#Condición de corte
-epsilon_convergencia = 1
-max_dif = float('inf')
-
-bornes = [
-    {'pot': 12, 'x': 50, 'y': 120}, # Borne con potencial "pot" expresado en V, con posición (x,y)
-    {'pot': -12, 'x': 51, 'y': 100}
-]
-
-# Auxiliares para comprobar si un punto es borne (no será actualizado)
-bornes_x = np.zeros(x_max)
-bornes_y = np.zeros(y_max)
-
-def es_borne(coord_x, coord_y): # Debería ser O(1)
-    #return next((True for borne in bornes if (borne['x'] == coord_x and borne['y'] == coord_y)), False)
-    return (bornes_x[coord_x] != 0 and bornes_y[coord_y] != 0) and (bornes_x[coord_x] == bornes_y[coord_y])
-
 # Creación de una malla de puntos en 2D
 x = np.linspace(0, x_max, x_max)
 y = np.linspace(0, y_max, y_max)
@@ -30,12 +13,34 @@ X, Y = np.meshgrid(x, y)
 
 # Inicialización del potencial eléctrico (matriz)
 V_total = np.zeros_like(X)
+grilla_control = np.zeros_like(X)
 
-# Actualizo la matriz con los bornes ya definidos
-for id_borne, borne in enumerate(bornes):
-    V_total[borne['y'], borne['x']] = borne['pot']
-    bornes_x[borne['x']] = id_borne+1 # estructuras auxiliares para "detectar" bornes
-    bornes_y[borne['y']] = id_borne+1
+# Vi,j = f(i,j) --> f va a retornar el valor del borne
+
+def es_borne(coord_x, coord_y):
+    return grilla_control[coord_y, coord_x] == 1
+
+def rectangulo(extremo_sup, ancho, alto, valor_pot):
+    y1, x1 = extremo_sup
+    y2, x2 = y1 + alto, x1 + ancho
+    V_total[y1:y2, x1:x2] = valor_pot
+    grilla_control[y1:y2, x1:x2] = 1
+
+def circulo(centro, radio, valor_pot):
+    yc, xc = centro
+    for y in range(V_total.shape[0]):
+        for x in range(V_total.shape[1]):
+            if (x - xc) ** 2 + (y - yc) ** 2 <= radio ** 2:
+                V_total[y, x] = valor_pot
+                grilla_control[y, x] = 1
+
+rectangulo((20,20), 5, 30, 9)
+rectangulo((40,60), 10, 15, 12)
+circulo((120,60), 10, 24)
+
+# Condición de corte
+epsilon_convergencia = .01
+max_dif = float('inf')
 
 # Función para calcular el promedio entre los vecinos
 def promedio_vecinos(coord_y, coord_x):
@@ -92,8 +97,8 @@ sup_potencial= plot.plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic
 #sup_potencial = plt.axes(projection='3d').plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic',edgecolor='none')
 plt.colorbar(sup_potencial,label="Potencial (V)")
 
-plt.savefig("labo2_combinado_1.jpg", bbox_inches='tight')
-#plt.show()
+#plt.savefig("labo2_combinado_4.jpg", bbox_inches='tight')
+plt.show()
 
 # Notas del asistente:
     # Debería manejar bornes con formas, no puntuales
