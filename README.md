@@ -25,5 +25,5 @@ $ pip install -r requirements.txt
 
 Ahora si podemos ejecutar el script
 ```
-$ python laboratorio2.py
+$ python laboratorio2_g14.py
 ``` 
