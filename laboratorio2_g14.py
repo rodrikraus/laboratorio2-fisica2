@@ -108,7 +108,7 @@ sup_potencial= plot.plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic
 #sup_potencial = plt.axes(projection='3d').plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic',edgecolor='none')
 plt.colorbar(sup_potencial,label="Potencial (V)")
 
-plt.savefig("labo2_combinado_4.jpg", bbox_inches='tight')
+plt.savefig(nombre_imagen_salida, bbox_inches='tight')
 #plt.show()
 
 # Notas del asistente:
