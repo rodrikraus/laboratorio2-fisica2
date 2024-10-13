@@ -2,25 +2,25 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 
-# Extensión del gráfico
-y_max = 161
-x_max = 101
+nombre_imagen_salida = "labo2.png" # Aporta flexibilidad para generar distintos resultados y compararlos
 
 # Condición de corte
-epsilon_convergencia = 1
-max_dif = float('inf') # Maximo "real" dado por Python. Auxiliar para hallar la maxima diferencia
+epsilon_convergencia = .01
 
-# Formas a dibujar
+# Formas a dibujar. Considerar una malla de 101 en X y 161 en Y
 rectangulos = [
     {'extremo_inf_x': 20, 'extremo_inf_y': 20, 'ancho': 5, 'alto': 30, 'valor_pot': 9},
     {'extremo_inf_x': 40, 'extremo_inf_y': 60, 'ancho': 10, 'alto': 15, 'valor_pot': 12}
 ]
 
 circulos = [
-    {'centro_x': 110, 'centro_y': 40, 'radio': 10, 'valor_pot': 24}
+    {'centro_x': 110, 'centro_y': 40, 'radio': 10, 'valor_pot': 16}
 ]
 
 # Creación de una malla de puntos en 2D
+# Extensión del gráfico
+y_max = 161
+x_max = 101
 x = np.linspace(0, x_max, x_max)
 y = np.linspace(0, y_max, y_max)
 X, Y = np.meshgrid(x, y)
@@ -72,6 +72,7 @@ def promedio_vecinos(coord_y, coord_x):
     return suma_vecinos/cant_vecinos
 
 # Ciclo principal
+max_dif = float('inf') # Maximo valor "real" dado por Python. Auxiliar para hallar la maxima diferencia
 while max_dif >= epsilon_convergencia:
     max_iteracion = 0
     for iy, ix in np.ndindex(V_total.shape): # Iteración para la grilla entera
@@ -107,8 +108,8 @@ sup_potencial= plot.plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic
 #sup_potencial = plt.axes(projection='3d').plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic',edgecolor='none')
 plt.colorbar(sup_potencial,label="Potencial (V)")
 
-#plt.savefig("labo2_combinado_4.jpg", bbox_inches='tight')
-plt.show()
+plt.savefig("labo2_combinado_4.jpg", bbox_inches='tight')
+#plt.show()
 
 # Notas del asistente:
     # Debería manejar bornes con formas, no puntuales
