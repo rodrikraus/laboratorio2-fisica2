@@ -9,7 +9,7 @@ epsilon_convergencia = .01
 
 # Formas a dibujar. Considerar una malla de 101 en X y 161 en Y
 rectangulos = [
-    {'extremo_inf_x': 20, 'extremo_inf_y': 20, 'ancho': 5, 'alto': 30, 'valor_pot': 9},
+    {'extremo_inf_x': 20, 'extremo_inf_y': 20, 'ancho': 5, 'alto': 30, 'valor_pot': -16},
     {'extremo_inf_x': 40, 'extremo_inf_y': 60, 'ancho': 10, 'alto': 15, 'valor_pot': 12}
 ]
 
@@ -55,34 +55,38 @@ for circulo in circulos:
 
 # Función para calcular el promedio entre los vecinos
 def promedio_vecinos(coord_y, coord_x):
-    cant_vecinos = 0 # la cantidad de vecinos puede variar, e.g. 1) esquina tendrá sólo dos vecinos 2) elemento en borde tendrá sólo tres
-    suma_vecinos = 0
+    suma_potencial_vecinos = 0
+    cant_vecinos = 0 # la cantidad de vecinos puede variar
+    # e.g. 1) esquina tendrá sólo dos vecinos 2) elemento en borde (gráfico) tendrá sólo tres
     if (coord_x-1 >= 0): # si hay vecino izq
         cant_vecinos += 1
-        suma_vecinos += V_total[coord_y, coord_x-1]
+        suma_potencial_vecinos += V_total[coord_y, coord_x-1]
     if (coord_x+1 < V_total.shape[1]): # si hay vecino der
         cant_vecinos += 1
-        suma_vecinos += V_total[coord_y, coord_x+1]
+        suma_potencial_vecinos += V_total[coord_y, coord_x+1]
     if (coord_y-1 >= 0): # si hay vecino inf
         cant_vecinos += 1
-        suma_vecinos += V_total[coord_y-1, coord_x]
+        suma_potencial_vecinos += V_total[coord_y-1, coord_x]
     if (coord_y+1 < V_total.shape[0]): # si hay vecino der
         cant_vecinos += 1
-        suma_vecinos += V_total[coord_y+1, coord_x]
-    return suma_vecinos/cant_vecinos
+        suma_potencial_vecinos += V_total[coord_y+1, coord_x]
+    return suma_potencial_vecinos/cant_vecinos
+
+def indices(matriz):
+    return np.ndindex(matriz.shape)
 
 # Ciclo principal
 max_dif = float('inf') # Maximo valor "real" dado por Python. Auxiliar para hallar la maxima diferencia
 while max_dif >= epsilon_convergencia:
-    max_iteracion = 0
-    for iy, ix in np.ndindex(V_total.shape): # Iteración para la grilla entera
-        if not es_borne(ix, iy): # Los bornes tendrán sus valores de potencial siempre fijos, entonces para cada elemento no-borne
+    maxdif_esta_iteracion = 0
+    for iy, ix in indices(V_total): # Iteración para la grilla entera
+        if not es_borne(ix, iy): # Sólo los puntos no-borne se actualizan
             nuevo_valor = promedio_vecinos(iy, ix)
             dif = abs(nuevo_valor - V_total[iy, ix])
-            if dif > max_iteracion:
-                max_iteracion = dif
+            if dif > maxdif_esta_iteracion:
+                maxdif_esta_iteracion = dif
             V_total[iy, ix] = nuevo_valor # se actualiza el valor
-    max_dif = max_iteracion # se actualiza la máxima diferencia por iteración
+    max_dif = maxdif_esta_iteracion # se actualiza la máxima diferencia por iteración
 
 # Generación de gráficos
 plot_base = plt.figure(figsize=(16,9))
@@ -97,7 +101,7 @@ plot.set_aspect('equal')
 plot.grid(True)
 
 # Graficar: Potencial eléctrico
-plt.contourf(X, Y, V_total, 20, cmap='seismic')
+plt.contourf(X, Y, V_total, 25, cmap='seismic')
 
 #Títulos y barra de colores de potencial
 plt.title("Potencial eléctrico")
@@ -105,7 +109,6 @@ plt.colorbar(label="Potencial (V)")
 
 plot = plot_base.add_subplot(122, projection='3d')
 sup_potencial= plot.plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic',edgecolor='none')
-#sup_potencial = plt.axes(projection='3d').plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic',edgecolor='none')
 plt.colorbar(sup_potencial,label="Potencial (V)")
 
 plt.savefig(nombre_imagen_salida, bbox_inches='tight')
