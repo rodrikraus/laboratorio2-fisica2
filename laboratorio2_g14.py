@@ -2,19 +2,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle
 
-nombre_imagen_salida = "labo2.png" # Aporta flexibilidad para generar distintos resultados y compararlos
+nombre_imagen_salida = "labo2_g14.png" # Aporta flexibilidad para generar distintos resultados y compararlos
 
 # Condición de corte
 epsilon_convergencia = .01
 
 # Formas a dibujar. Considerar una malla de 101 en X y 161 en Y
 rectangulos = [
-    {'extremo_inf_x': 20, 'extremo_inf_y': 20, 'ancho': 5, 'alto': 30, 'valor_pot': -16},
-    {'extremo_inf_x': 40, 'extremo_inf_y': 60, 'ancho': 10, 'alto': 15, 'valor_pot': 12}
+    {'extremo_inf_x': 20, 'extremo_inf_y': 125, 'ancho': 10, 'alto': 10, 'valor_pot': 9},
+    {'extremo_inf_x': 40, 'extremo_inf_y': 80, 'ancho': 15, 'alto': 10, 'valor_pot': 16}
 ]
 
 circulos = [
-    {'centro_x': 110, 'centro_y': 40, 'radio': 10, 'valor_pot': 16}
+   {'centro_x': 50, 'centro_y': 30, 'radio': 5, 'valor_pot': -16}
 ]
 
 # Creación de una malla de puntos en 2D
@@ -51,7 +51,7 @@ for rectangulo in rectangulos:
     dibujar_rectangulo((rectangulo['extremo_inf_y'], rectangulo['extremo_inf_x']), rectangulo['ancho'], rectangulo['alto'], rectangulo['valor_pot'])
 
 for circulo in circulos:
-    dibujar_circulo((circulo['centro_x'], circulo['centro_y']), circulo['radio'], circulo['valor_pot'])
+    dibujar_circulo((circulo['centro_y'], circulo['centro_x']), circulo['radio'], circulo['valor_pot'])
 
 # Función para calcular el promedio entre los vecinos
 def promedio_vecinos(coord_y, coord_x):
@@ -92,8 +92,8 @@ while max_dif >= epsilon_convergencia:
 plot_base = plt.figure(figsize=(16,9))
 plot = plot_base.add_subplot(121)
 
-# Graficar: ejes y grilla
-plot.set_xlabel('$x$')
+# Graficar: ejes y gr120illa
+plot.set_xlabel("$x$ \n Épsilon de convergencia: " + str(epsilon_convergencia))
 plot.set_ylabel('$y$')
 plot.set_xlim(0,x_max)
 plot.set_ylim(0,y_max)
@@ -112,9 +112,5 @@ sup_potencial= plot.plot_surface(X,Y,V_total, rstride=1, cstride=1,cmap='seismic
 plt.colorbar(sup_potencial,label="Potencial (V)")
 
 plt.savefig(nombre_imagen_salida, bbox_inches='tight')
-#plt.show()
-
-# Notas del asistente:
-    # Debería manejar bornes con formas, no puntuales
-    # Informe es igual que el anterior: explicar la física de lo que se ve en los gráficos
-    # Recomendó explicar un poco de la algoritmia
+plt.show()
+plt.close()
